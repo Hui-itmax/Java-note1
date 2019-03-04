@@ -1,0 +1,860 @@
+1.vmware的安装
+  一是一个软件，双击打开，按一下步，直至到按装结束(傻瓜式按装)
+2.Centos6.4
+  （1）点击菜单中的"文件" -->新键虚拟机
+   (2) 选择典型
+   (3) 稍后按装操作系统
+   (4) 选择linux,选择CentOS64
+   (5) 虚拟机的名子linux,选择一个目录按装linux,F:\4QVM\linux
+   (6) 调整磁盘的大小，建议10G,选择将虚拟机折分成多个文件
+   (7) 完成
+   
+3.设置Linux相关设置
+    (1)Cpu  1核
+	(2)内存 1G
+    (3)网络配适器：NAT模式
+	(4)设置cd/dvd  勾选使用文件镜像，选择你的镜像文件的地址
+	(5)确定
+	
+4.安装
+    (1)开机，绿色三角
+    (2)选择第一项，install or upgrade an existing system
+    (3)选择skip
+	(4)图形化界面，选择next
+	(5)选择语言，english,美式英语
+	(6)What type of devices will your installation involve?
+	   Basic Storage Devices
+	(7)Yes discard any data
+	(8)Hostname :  linux
+	(9)选择时区：Asia/Shanghai
+	(10) 设置密码: 123456  帐户默认为超级帐户，名子默认为root
+	(11)选择Use Anyway
+	(12)Which type of installtion would you like?
+	    选择第二项，Replace Existing Linux System
+	(13) Write changes to disk
+	(14) Minimal
+	(15)自动按装
+	(16)按装成功之后，选择ReBoot重启
+	
+5.linux的使用和系统配置
+    （1）开机之后，提示输入用户名和密码 
+	     root    123456
+     (2)修改主机名
+        需要修改配置文件，否则下次启动时会复恢原来的主机名
+        vi /etc/sysconfig/network
+
+		NETWORKING=yes
+		HOSTNAME=linux
+		
+	 (3)配置静态IP:  ifconfig eth0 192.168.18.131
+	 
+	 (4)配置IP与主机名映射	
+	    在/etc/hosts文件中配置IP与主机名映射
+		vi /etc/hosts
+		按一个i键进入了编辑模式
+		找到文件的最后一行回车加入以下面的配置
+		192.168.18.xxx linux 
+		按一下esc键
+		：wq 回车
+	
+	 (5)永久性配置CentOS网络
+	    vi /etc/sysconfig/network-scripts/ifcfg-eth0 回车
+		按一个i键进入了编辑模式
+		DEVICE=eth0
+		HWADDR=00:0C:29:96:14:B2
+		TYPE=Ethernet
+		UUID=bfa221b3-83f5-40d3-949a-dfc4c7e4c646
+		ONBOOT=yes
+		NM_CONTROLLED=yes
+		BOOTPROTO=static
+		IPADDR=192.168.18.xxx
+		NETMASK=255.255.255.0
+		GATEWAY=192.168.18.x
+		DNS=192.168.18.x
+		按一下esc键
+		：wq 回车
+		
+	 (6)重启网络服务
+        service network restart
+		
+	 (7)关闭防火墙
+       service iptables stop
+ 
+     (8)永久性关闭防火墙
+        chkconfig iptables off 
+		
+	 (9)查看防火墙状态
+		chkconfig --list | grep iptables
+		
+		iptables        0:off   1:off   2:off   3:off   4:off   5:off
+		
+	 (10)修改/etc/selinux/config中的SELINUX=disabled
+		vi /etc/selinux/config
+		按一个i键进入了编辑模式
+		SELINUX=disabled
+		按一下esc键
+		：wq 回车
+		
+	 (11)配置dns服务器
+	     vi /etc/resolv.conf
+		 nameserver 192.168.18.2
+
+         测试网络是否可以上网 ping www.baidu.com
+
+		 ping window系统的ip
+		 ping 10.10.10.253(自己电脑window系统IP)
+		 ping 10.10.10.253 (10.10.10.253) 56(84) bytes of data.
+		 64 bytes from 10.10.10.253: icmp_seq=1 ttl=128 time=2.80 ms
+		 64 bytes from 10.10.10.253: icmp_seq=2 ttl=128 time=0.623 ms
+		 64 bytes from 10.10.10.253: icmp_seq=3 ttl=128 time=0.987 ms
+		 
+	     如果拼不通，检查window系统的防火墙是否关闭，如果没有关闭，请关闭window系统的防火墙.
+
+		 修改window系统的hosts文件
+		 C:\Windows\System32\drivers\etc\hosts
+		 加入192.168.18.131  shop2
+         然后保存退出		
+		 
+		 
+　　　　　　　　*****************linux常用命令****************************
+		 
+		#################################开关与关机#######################
+		
+		shutdown -h now 正常关机
+		halt     关闭内存，也机关
+		init 0   关机
+		reboot   重启
+
+		init一共分为7个级别，这7个级别的所代表的含义如下：
+
+		0：停机或者关机（千万不能将initdefault设置为0）
+
+		1：单用户模式，只root用户进行维护
+
+		2：多用户模式，不能使用NFS(Net File System)
+
+		3：完全多用户模式（标准的运行级别）
+
+		4：安全模式
+
+		5：图形化（即图形界面）
+
+		6：重启
+		
+		
+    **************************************目录介绍***********************************
+    
+	bin: binary(二进制) 表示该目录中存放了一些二进制文件，是可以直接运行的。
+	dev: 该目录主要存放的是外部设备，如U盘、移动硬盘等（在此目录中需要挂载）。
+	mnt: 外接设备需要挂载的时候，就需要挂载到mnt目录
+	etc：主要存储一些配置文件。
+	home(家): 存放的是该系统中除root用户外的所有的用户的目录。
+	proc:名称Process,表示进程，该目录中存储的是Linux运行时的进程。
+	root：该目录是root用户的家目录
+	sbin:全称super binary 该目录是存储一些可以被执行的二进制文件，但是必须拥有root权限的用户才能执行。
+	tmp:临时目录。用来存储系统运行时产生的临时文件
+	usr: 存放的是用户所安装的软件
+	var：存储的程序体系统的日志文件目录
+	
+	
+	************************************Linux相关命令***********************************
+	
+    ls(全称list)命令:显示当前目录下的文件与目录
+	[root@shop1 /]# ls
+
+	ls 路径，显示该路径下的所有的文件与目录
+	[root@shop1 /]# ls /usr
+
+	[root@shop1 /]# ls -l  以长格式显示当前目录下的文件与目录
+
+	[root@shop1 /]# ls -lh 以长格式显示当前目录下的文件与目录，以列表的形式并且在显示文档大小的时候以
+	可读性较高的形式显示
+
+	-a  显示所有的文件与目录
+	-l  以长格式显示
+	-h  以较高的可读性显示	
+	
+	---------------------------pwd命令------------------------------------
+	pwd(print working directory)打印当前目录或文件的路径
+	[root@shop1 home]# pwd
+	/home
+
+	---------------------------cd命令------------------------------------
+	cd (change directory)切换目录
+	[root@shop1 home]# cd /root
+
+
+	---------------------------mkdir命令------------------------------------
+	mkdir(make directory)创建目录
+	[root@shop1 home]# mkdir aaa 在当前目录下创建一个 aaa目录
+
+	[root@shop1 home]# mkdir -p /a1/a2/a3  创建a3目录，如果a3目录不存在，-p表示创建父目录
+
+	[root@shop1 ~]# mkdir aa bb cc 表示在当前目录下一次性创建多个目录
+		
+	---------------------------touch命令------------------------------------
+	touch 创建文件
+
+	[root@shop1 ~]# touch file.txt  在当前目录下创建一个文件
+
+	[root@shop1 ~]# touch file1.txt  file2.txt 在当前目录下一次性创建多个文件
+	
+		
+	---------------------------cp命令------------------------------------
+	cp（copy）复制
+
+	[root@shop1 ~]# cp file.txt /home/  把当前目录下的file.txt文件复制到/home目录下
+
+	[root@shop1 home]# cp -r ./aaa /usr/home 把当前目录下的aaa目录复制/usr/home目录下	
+	-r：表示递归
+
+	---------------------------mv命令------------------------------------
+	mv (move)移动/剪贴
+	[root@shop1 home]# mv file.txt /usr/home  将当前目录下的file.txt 移动到/usr/home目录下
+
+	[root@shop1 home]# mv file2.txt /usr/home/files.txt  将当前目录下的file.txt 移动到/usr/home目录下并且改名为files.txt
+	
+	---------------------------rm命令------------------------------------
+	rm (remove) 移除/删除
+
+	[root@shop1 home]# rm /usr/home/files.txt  删除/usr/home目录下的files.txt
+
+	[root@shop1 home]# rm -rf /usr/home/aaa  删除/usr/home目录下的aaa目录
+	
+    -r递归
+	-f 不询问	
+	
+
+	---------------------------vi/vim命令------------------------------------
+	vi/vim 是一个文本编辑器
+
+	[root@shop1 home]# vi aaa.txt  编辑aaa.txt文件
+	退出shift : q 回车
+	不保存退出 shift : q! 回车
+	保存退出  shift : wq  回车
+	或者直接按两个大写的Z 也可以实现保存
+	
+	---------------------------输出重定向------------------------------------
+	
+	一般命令的输出都会显示在终端中，有些需要将一些命令的执行结果保存在一个文件
+	中进行后续的分析和统计，则需要输出重定向技术。
+
+	> 表示覆盖输出，会覆盖掉原来的文件内容
+	>> 追加输出     不会覆盖原来的文件内容，会在原文件尾添加
+
+	[root@shop1 /]# ls -al >a.txt
+	[root@shop1 /]# more a.txt
+
+	[root@shop1 /]# ls -l >a.txt  会覆盖掉原来的文件内容
+	[root@shop1 /]# more a.txt
+		
+	--------------------------------cat命令-------------------------------------------
+	cat 查看文件
+	[root@shop1 /]# cat b.txt
+
+	合并文件
+	[root@shop1 /]# cat a.txt b.txt > c.txt
+	
+	--------------------------------head命令-------------------------------------------
+	head 命令是查看文件的前n行，如果n未指定，则默认显示前10行
+	[root@shop1 ~]# head -5 install.log
+
+
+	--------------------------------tail命令---------------------------------------------
+	tail 命令是查看文件的尾n行，如果n未指定，则默认显示后10行
+	[root@shop1 ~]# tail -5 install.log
+
+
+	--------------------------------less命令-------------------------------------------
+	less命令： 查看文件，以较少的内容进行输出，按下辅助功能键查看更多
+	[root@shop1 ~]# less install.log
+
+	按q退出
+	
+	--------------------------------df命令-------------------------------------------
+	df 查看磁盘的空间
+	[root@shop1 /]# df
+	Filesystem           1K-blocks      Used Available Use% Mounted on
+	/dev/mapper/vg_shop1-lv_root
+						  18134344    740540  16472616   5% /
+	tmpfs                   506272         0    506272   0% /dev/shm
+	/dev/sda1               495844     32411    437833   7% /boot
+
+
+	[root@shop1 /]# df -h
+	Filesystem            Size  Used Avail Use% Mounted on
+	/dev/mapper/vg_shop1-lv_root
+						   18G  724M   16G   5% /
+	tmpfs                 495M     0  495M   0% /dev/shm
+	/dev/sda1             485M   32M  428M   7% /boot
+
+    --------------------------------free命令-------------------------------------------
+	free 查看内存的使用情况
+
+	[root@shop1 /]# free
+				 total       used       free     shared    buffers     cached
+	Mem:       1012548     100036     912512          0       9124      30876
+	-/+ buffers/cache:      60036     952512
+	Swap:      2031608          0    2031608
+
+
+	[root@shop1 /]# free -m
+				 total       used       free     shared    buffers     cached
+	Mem:           988         97        890          0          8         30
+	-/+ buffers/cache:         58        930
+	Swap:         1983          0       1983
+	
+	
+	--------------------------------wc命令-------------------------------------------
+	wc(wordCount)命令：统计文件内容信息（包含行数，单词数，字节数）
+	wc -lwc 要统计的文件名
+	-l:  表示lines行数
+	-w:  表示words单词数
+	-c:  表示bytes字节数
+
+	[root@shop1 ~]# wc -lwc install.log
+	 212  437 9169 install.log
+	 
+	 --------------------------------date命令-------------------------------------------
+	date 表示操作时间
+	[root@shop1 ~]# date
+	Wed Aug  8 01:14:12 CST 2018
+
+	[root@shop1 ~]# date +%F
+	2018-08-08
+
+	[root@shop1 ~]# date "+%Y-%m-%d"
+	2018-08-08
+
+	[root@shop1 ~]# date +%F%T
+	2018-08-0801:19:48
+
+	[root@shop1 ~]# date "+%F %T"
+	2018-08-08 01:21:16
+
+	[root@shop1 ~]# date "+%Y-%m-%d %H:%M:%S"
+	2018-08-08 01:23:05
+	[root@shop1 ~]# 
+
+	减一个月：
+	[root@shop1 ~]# date -d "-1 day"
+	Tue Aug  7 01:24:39 CST 2018
+
+	[root@shop1 ~]# date -d "-1 year"
+	Tue Aug  8 01:25:39 CST 2017
+	
+	
+	--------------------------------cal命令-------------------------------------------
+	cal:操作日历
+	[root@shop1 ~]# cal
+		 August 2018    
+	Su Mo Tu We Th Fr Sa
+			  1  2  3  4
+	 5  6  7  8  9 10 11
+	12 13 14 15 16 17 18
+	19 20 21 22 23 24 25
+	26 27 28 29 30 31
+
+
+	[root@shop1 ~]# cal -3
+		  July 2018            August 2018         September 2018   
+	Su Mo Tu We Th Fr Sa  Su Mo Tu We Th Fr Sa  Su Mo Tu We Th Fr Sa
+	 1  2  3  4  5  6  7            1  2  3  4                     1
+	 8  9 10 11 12 13 14   5  6  7  8  9 10 11   2  3  4  5  6  7  8
+	15 16 17 18 19 20 21  12 13 14 15 16 17 18   9 10 11 12 13 14 15
+	22 23 24 25 26 27 28  19 20 21 22 23 24 25  16 17 18 19 20 21 22
+	29 30 31              26 27 28 29 30 31     23 24 25 26 27 28 29
+												30     
+												
+
+	[root@shop1 ~]# cal -y 2018
+								   2018                               
+
+		   January               February                 March       
+	Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+		1  2  3  4  5  6                1  2  3                1  2  3
+	 7  8  9 10 11 12 13    4  5  6  7  8  9 10    4  5  6  7  8  9 10
+	14 15 16 17 18 19 20   11 12 13 14 15 16 17   11 12 13 14 15 16 17
+	21 22 23 24 25 26 27   18 19 20 21 22 23 24   18 19 20 21 22 23 24
+	28 29 30 31            25 26 27 28            25 26 27 28 29 30 31
+
+			April                   May                   June        
+	Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+	 1  2  3  4  5  6  7          1  2  3  4  5                   1  2
+	 8  9 10 11 12 13 14    6  7  8  9 10 11 12    3  4  5  6  7  8  9
+	15 16 17 18 19 20 21   13 14 15 16 17 18 19   10 11 12 13 14 15 16
+	22 23 24 25 26 27 28   20 21 22 23 24 25 26   17 18 19 20 21 22 23
+	29 30                  27 28 29 30 31         24 25 26 27 28 29 30
+
+			July                  August                September     
+	Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+	 1  2  3  4  5  6  7             1  2  3  4                      1
+	 8  9 10 11 12 13 14    5  6  7  8  9 10 11    2  3  4  5  6  7  8
+	15 16 17 18 19 20 21   12 13 14 15 16 17 18    9 10 11 12 13 14 15
+	22 23 24 25 26 27 28   19 20 21 22 23 24 25   16 17 18 19 20 21 22
+	29 30 31               26 27 28 29 30 31      23 24 25 26 27 28 29
+												  30
+		   October               November               December      
+	Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+		1  2  3  4  5  6                1  2  3                      1
+	 7  8  9 10 11 12 13    4  5  6  7  8  9 10    2  3  4  5  6  7  8
+	14 15 16 17 18 19 20   11 12 13 14 15 16 17    9 10 11 12 13 14 15
+	21 22 23 24 25 26 27   18 19 20 21 22 23 24   16 17 18 19 20 21 22
+	28 29 30 31            25 26 27 28 29 30      23 24 25 26 27 28 29
+												  30 31
+												  
+   --------------------------------管道符命令-------------------------------------------											
+
+	管道符：| 
+	作用: 管道一般可以用于"过滤","特殊","扩展处理"。
+	管道不能单独使用，必须配合以前的指令使用。
+
+	[root@shop1 /]# ls -al /|grep m  列出根目录下的含有m的文件或目录	
+	
+
+   *******************************高级命令******************************************
+    	
+   ****************************hostname命令***********************
+	hostname：用于显示主机名
+
+	[root@imageServer ~]# hostname
+	imageServer
+
+	[root@imageServer ~]# hostname -f   表示输出主机中的FQDN（全限定名）
+	imageServer
+	
+	
+	****************************id命令***********************
+	id命令： 查看用户的基本信息（包括用户id,用户组id,附加组id等）
+			 如果该命令没有指定用户，默认为当前用户
+			 
+	[root@imageServer ~]# id
+	uid=0(root) gid=0(root) groups=0(root)
+	
+	
+	****************************whoami命令***********************
+	whoami:我是谁？用来显示当前用户的用户名
+
+	[root@imageServer ~]# whoami
+	root
+	
+	****************************ps命令(重要)***********************
+	ps命令:主要显示服务器进程信息
+
+	-e :等价于"-A",表示列出全部进程
+	-f :表示显示全部的列
+
+	[root@imageServer ~]# ps -ef
+	UID        PID  PPID  C STIME TTY          TIME CMD
+	root         1     0  0 21:19 ?        00:00:02 /sbin/init
+	root         2     0  0 21:19 ?        00:00:00 [kthreadd]
+	root         3     2  0 21:19 ?        00:00:00 [migration/0]
+	root         4     2  0 21:19 ?        00:00:04 [ksoftirqd/0]
+	root         5     2  0 21:19 ?        00:00:00 [migration/0]
+	root         6     2  0 21:19 ?        00:00:00 [watchdog/0]
+	root         7     2  0 21:19 ?        00:00:08 [events/0]
+	root         8     2  0 21:19 ?        00:00:00 [cgroup]
+	root         9     2  0 21:19 ?        00:00:00 [khelper]
+	root        10     2  0 21:19 ?        00:00:00 [netns]
+	root        11     2  0 21:19 ?        00:00:00 [async/mgr]
+	root        12     2  0 21:19 ?        00:00:00 [pm]
+	root        13     2  0 21:19 ?        00:00:01 [sync_supers]
+
+	其中：
+		uid:表示该进程执行的用户id
+		pid:表示进程id
+		ppid:表示该进程的父进程id
+		C:表示cpu的占用率，以百分比的形式显示
+		STIME:表示进程的启动时间
+		TTY:表示终端设备，发起该进程的设备识别符号，如果显示"?"则表示该进程
+		并不是由终端设备发起。
+		TIME:表示进程的执行时间
+		CMD:表示该进程的名称或路径
+		
+
+	利用管道流过滤出我们想要的进程
+	[root@imageServer ~]# ps -ef | grep httpd
+	root      1051  1015  0 22:07 pts/0    00:00:00 grep httpd
+
+	****************************ps aux****************************
+	
+    USER 进程的用户；
+	PID   进程的ID；
+	%CPU   进程占用的CPU百分比；
+	%MEM  占用内存的百分比；
+	VSZ     该进程使用的虚拟内存量（KB）；
+	RSS     该进程占用的固定内存量（KB）；
+	TTY     该进程在哪个终端上运行（登陆者的终端位置），若与终端无关，则显示（？）。若为pts/0等，则表示由网络连接主机进程；
+	START   该进程被触发启动时间；
+	TIME      该进程实际使用CPU运行的时间；
+	COMMAND   命令的名称和参数；
+
+	STAT状态位常见的状态字符
+	D 无法中断的休眠状态（通常 IO 的进程）；
+	R 正在运行可中在队列中可过行的；
+	S 处于休眠状态；
+	T 停止或被追踪；
+	W 进入内存交换 （从内核2.6开始无效）；
+	X 死掉的进程  （基本很少见）；
+	Z 僵尸进程；
+	< 优先级高的进程；
+	N 优先级较低的进程；
+	L 有些页被锁进内存；
+	s 进程的领导者（在它之下有子进程）；
+	l 多进程的（使用 CLONE_THREAD, 类似 NPTL pthreads）；
+	+ 位于后台的进程组；
+
+	****************************top命令***********************
+	top命令：查看进程所占用的服务器资源率，按q键退出
+		  
+	PID:进程id
+	USER:该进程对应的用户
+	PR:优先级
+	NI:用户进程空间内改变过优先级的进程占用CPU百分比
+	VIRT:虚拟内存
+	RES:常驻内存
+	SHR:共享内存
+	S:表示进程的状态，sleeping表示睡眠，R表示运行
+	%CPU:表示CPU的占用百分比
+	%MEM:表示内存的占用百分比
+	TIME+:执行的时间
+	COMMAND:进程的名称或者路径     
+
+	在运行top时，可以按下快捷键进行排序。
+	M：表示将结果按照内存从高到低进行降序排列
+	P：表示将结果按照CPU使用率从高到低降序排列
+	1：当服务器拥用多个CPU的时候，可以使用"1"快捷键来切换是否展示各个cpu的详细信息 
+
+	****************************du命令***********************
+	du命令:查看目录的真实大小
+
+	-s：只显示汇总的大小
+	-h: 表示以高可读形式进行显示
+
+	[root@imageServer /]# du -sh mnt
+	4.0K    mnt
+
+	[root@imageServer /]# du -sh lib64
+	19M     lib64
+	
+	
+	****************************find命令***********************
+	find命令:用于查找文件
+
+	find 路径范围 参数 参数的值
+
+	-name:按照文档名称进行搜索（支持模糊搜索）
+	-type:按照文档的类型进行搜索
+		  文档类型： "-"表示文件，在使用时用f来替换
+					 "d"表示目录
+
+
+	查找所有的hosts文件				 
+	[root@imageServer ~]# find / -name hosts
+	/etc/hosts
+
+	查找/etc目录下的所有文件
+	[root@imageServer ~]# find /etc/ -type f
+
+	统计/etc目录下的所有文件的数量
+	[root@imageServer ~]# find /etc/ -type f | wc -l
+    655
+	
+	****************************service命令***********************
+	service命令:用于控制一些软件服务的启动/停止/重启
+
+	service 服务名  start/stop/restart
+
+	service iptables start
+	
+	
+	****************************kill命令**************************
+	kill命令:杀死进程
+
+	kill 进程名（服务）
+
+	kill -9 进程名（服务）
+
+	killall 进程名（服务）
+
+
+	****************************ifconfig命令**************************
+	ifconfig命令:查看或设置ip地址
+
+	[root@imageServer ~]# ifconfig
+	eth0      Link encap:Ethernet  HWaddr 08:00:27:48:C2:32  
+			  inet addr:192.168.31.150  Bcast:192.168.31.255  Mask:255.255.255.0
+			  inet6 addr: fe80::a00:27ff:fe48:c232/64 Scope:Link
+			  UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+			  RX packets:36729 errors:0 dropped:0 overruns:0 frame:0
+			  TX packets:2797 errors:0 dropped:0 overruns:0 carrier:0
+			  collisions:0 txqueuelen:1000 
+			  RX bytes:2576047 (2.4 MiB)  TX bytes:1962138 (1.8 MiB)
+
+	lo        Link encap:Local Loopback  
+			  inet addr:127.0.0.1  Mask:255.0.0.0
+			  inet6 addr: ::1/128 Scope:Host
+			  UP LOOPBACK RUNNING  MTU:16436  Metric:1
+			  RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+			  TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+			  collisions:0 txqueuelen:0 
+			  RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
+			  
+			  
+	****************************uptime命令**************************
+	uptime命令:输出计算机的持续在线时间（计算机从开机到现在的运行时间）
+
+	[root@imageServer ~]# uptime
+	 23:29:56 up  2:10,  1 user,  load average: 0.00, 0.00, 0.00
+
+
+	****************************uname命令**************************
+	uname命令:获取计算机操作系统相关信息
+
+	[root@imageServer ~]# uname     获取操作系统的类型
+	Linux
+
+	[root@imageServer ~]# uname -a  获取操作系统的全部信息
+	Linux imageServer 2.6.32-358.el6.x86_64 #1 SMP Fri Feb 22 00:31:26 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
+
+
+
+	****************************netstat命令(重要)**************************
+	netstat命令:查看网络连接状态
+
+	[root@imageServer ~]# netstat -tnlp
+	Active Internet connections (only servers)
+	Proto Recv-Q Send-Q Local Address               Foreign Address             State       PID/Program name   
+	tcp        0      0 0.0.0.0:80                  0.0.0.0:*                   LISTEN      991/nginx           
+	tcp        0      0 0.0.0.0:21                  0.0.0.0:*                   LISTEN      896/vsftpd          
+	tcp        0      0 0.0.0.0:22                  0.0.0.0:*                   LISTEN      885/sshd            
+	tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LISTEN      972/master          
+	tcp        0      0 :::22                       :::*                        LISTEN      885/sshd            
+
+	-t:表示列出tcp协议的连接
+	-n:表示将地址从字母组合转化成ip地址，将协议转换成端口来显示
+	-l:表示过滤出"state(状态)"列中其值为listen的连接
+	-p:显示发起连接进程的pid和进程名称
+	
+	
+	******************************用户操作*********************************
+	添加用户： useradd 选项 用户名
+	选项:
+		-g:表示指定用户的用户组,值可以是用户组的id,或组名
+		-G:表示指定用户的附加组,值可以是用户组的id,或组名
+		-u:uid，用户的id（用户的标识符）系统默认会从500之后按顺序分配uid,如果不想使用系统分配
+		   的，可以通过该选项自定义。
+		
+		增加zhaoliu用户	
+		useradd zhaoliu
+		可以查看/etc/passwd文件信息
+		zhaoliu:x:503:503::/home/zhaoliu:/bin/bash
+		zhaoliu是用户名
+		x:表示密码
+		503:表示用户id
+		503:表示用户组id
+		::之间可以写注释
+		/home/zhaoliu:表示家目录
+		/bin/bash:解释器shell
+		
+		
+	修改用户：usermod 选项  用户名
+
+		 选项：
+			 -g:
+			 -G:
+			 -u：
+			 -l：修改用户名
+			 
+			 修改赵六为田七
+			 usermod -l tianqi zhaoliu
+			 
+	设置密码: linux不允许没有密码的用户登陆到系统,所以我们创建完用户后，为用户设置密码。
+			   
+			  passwd 用户名
+			  
+			  例如:
+			  [root@imageServer bin]# passwd zhaoliu
+			  Changing password for user zhaoliu.
+			  New password: 
+			  BAD PASSWORD: it is WAY too short
+			  BAD PASSWORD: is a palindrome
+			  Retype new password: 
+			  passwd: all authentication tokens updated successfully.
+
+	切换用户：使用su来切换用户
+			  [root@imageServer bin]# su zhaoliu
+			  [zhaoliu@imageServer bin]$ 
+			  
+			  如果su后面没有写用户名，则默认切换到root用户
+			  [zhaoliu@imageServer bin]$ su
+			  Password: 
+			  [root@imageServer bin]# 
+
+	删除用户： userdel 选项  用户名 
+			   
+			   选项：
+				   -r:表示删除用户的同时，删除其家目录
+				   
+				   userdel -r zhaoliu
+				   如果zhaoliu在被删除之前登陆过系统，系统中有有关于zhaoliu的进程是删除失败的。这时可以把zhaoliu
+				   的进行kill掉。再删除zhaoliu用户.
+				   
+				   ps -ef | grep zhaoliu
+				   
+				   kill 进程号
+				   userdel zhaoliu
+				   
+				   
+	***********************Linux权限解释***********************
+
+	-rw-r--r--.   1 root root     0 11月 27 09:54 .readahead_collect
+	dr-xr-x---.  28 root root  4096 11月 26 23:54 root
+	dr-xr-xr-x.   2 root root 12288 11月 26 12:19 sbin
+	drwxr-xr-x.   7 root root     0 11月 27 08:34 selinux
+	drwxr-xr-x.   2 root root  4096 9月  23 2011 srv
+	drwxr-xr-x.  13 root root     0 11月 27 08:34 sys
+
+	在linux中，文件或目录是有权限的，采用1333格式表示,共10位
+
+	-  rw-  r--  r--
+	   
+
+	其中第一位表示类型： 
+					  -  表示文件
+					  d  表示目录
+					  l  表示连接 即link (快捷方式)
+
+	文件有三种方式: r  可读     2^2=4 
+					w  可写     2^1=2
+					x  可执行   2^0=1
+
+
+	***********************修改文件所属者或所属组***********************
+	修改文件的拥有者:
+	   chown 用户 文件名
+	   chown root aaa.txt
+
+	修改文件的所属组
+	   chgrp 组名 文件名
+	   chgrp root aaa.txt
+
+	一次性改用户和所属组
+	   chown zhangsan:zhangsan aaa.txt
+
+
+
+	***********************修改文件或目录的操作权限***********************
+	所属用户为u
+	所属组为g
+	其它用户o
+
+	为用户组增加可写权限
+	chmod g+w a.txt
+
+	为用户组减少写权限
+	chmod g-w a.txt
+
+	为用户增加可执行权限
+	chmod u+x a.txt		
+	
+	
+	
+	*****************************Linux上怎么装软件************************************
+	
+	mysql的安装
+
+	1.按装mysql: yum install mysql-server
+	2.启动mysql服务: service mysqld start
+	3.查看mysql服务的进程： netstat -tnlp 
+	3.初始化mysql: mysql_secure_installation
+	  1) Enter current password for root(enter for none) 请输入当前root用户的密码,如果没有请按回车键
+		 因为我们是首次按装，并没有密码所以选择"按回车键"
+	  2) Set root password? 是否设置root用户的密码?  我们选择y，给root用户设置密码
+	  3) Remove anonymous users? 是否移除匿名用户？  我们选择y，移除匿名用户
+	  4）Disallow root login remotely?是否允许root用户远程登陆? 我们选择n
+	  5) Remove test database and access to it?是否移除测试数据库?选择n
+	  6)Reload privilege tables now?是否重新加载权限表？选择y
+	  
+	到此为止，按装结束。
+
+	登陆mysql：
+	   mysql -u root -p
+	   
+
+	默认目录和文件位置：
+	数据库存储目录--- /var/lib/mysql
+	配置文件的位置--- /etc/my.cnf
+	
+	导入数据:
+	create database oa;
+	use oa;
+	source /usr/local/oa.sql
+	
+	
+	
+	下载jdk
+
+	tar -zxf apache-tomcat-7.0.90.tar.gz -C /usr/local
+	tar -zxf jdk-7u79-linux-x64.tar.gz -C /usr/local
+
+
+	在/etc/profile中配置：
+
+	## SET JAVA HOME
+	export JAVA_HOME=/usr/local/jdk1.7.0_79
+	export PATH=$PATH:$JAVA_HOME/bin
+
+	##SET TOMCAT
+	export CATALINA_HOME=/usr/local/tomcat
+	export PATH=$PATH:$CATALINA_HOME/bin
+
+	source /etc/profile
+
+	java -version
+	java version "1.7.0_79"
+	Java(TM) SE Runtime Environment (build 1.7.0_79-b15)
+	Java HotSpot(TM) 64-Bit Server VM (build 24.79-b02, mixed mode)
+
+
+	进入/usr/local/tomcat/bin
+	   ./startup.sh
+	   Using CATALINA_BASE:   /usr/local/tomcat
+	Using CATALINA_HOME:   /usr/local/tomcat
+	Using CATALINA_TMPDIR: /usr/local/tomcat/temp
+	Using JRE_HOME:        /usr/local/jdk1.7.0_79
+	Using CLASSPATH:       /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar
+	Tomcat started.
+
+
+	通过浏览器输入: http://shop2:8080/
+					http://192.168.18.132:8080
+					http://www.shop2.com:8080
+	
+	
+	
+	进入/usr/local/tomcat/bin
+	   ./startup.sh
+	   Using CATALINA_BASE:   /usr/local/tomcat
+	Using CATALINA_HOME:   /usr/local/tomcat
+	Using CATALINA_TMPDIR: /usr/local/tomcat/temp
+	Using JRE_HOME:        /usr/local/jdk1.7.0_79
+	Using CLASSPATH:       /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar
+	Tomcat started.
+
+
+通过浏览器输入: http://linux:8080/
+                http://192.168.18.201:8080
+				
+				
+打开eclipse，选中oa工程打war包
+在工程上右键先择Run As  Maven Build...
+输入clean package 
+在target下有一个oa.war，把oa.war上传到你的linux系统上的tomcat目录下的webapps目录中
+vi /usr/local/tomcat/conf/server.xml ,把端改成80
+重启tomcat
+
+http://linux:8080/oa
+	
+	
+	

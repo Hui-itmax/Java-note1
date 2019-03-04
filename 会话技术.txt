@@ -1,0 +1,71 @@
+﻿会话技术
+
+什么是会话?
+会话可简单理解为：用户开一个浏览器，点击多个超链接，访问服务器多个web资源，
+然后关闭浏览器，整个过程称之为一个会话。 
+
+会话有两种技术:
+   (1)客户端的会话技术Cookie
+	(2)服务端的会话技术HttpSession
+	
+
+客户端的会话技术Cookie:
+    
+	IE、Firefox等都可以使用Cookie进行会话(数据交换)
+	
+	请求	GET /day04/CookieServlet HTTP/1.1
+	Accept	text/html, application/xhtml+xml, */*
+	Accept-Language	zh-CN
+	User-Agent	Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko
+	Accept-Encoding	gzip, deflate
+	Host	localhost:8080
+	DNT	1
+	Connection	Keep-Alive
+	Cache-Control	no-cache
+	-------------------------------------------------------------------------------------
+	响应协议:
+
+	响应	HTTP/1.1 200 OK
+	Server	Apache-Coyote/1.1
+	Set-Cookie	name=zhangsan
+	Content-Type	text/html;charset=utf-8
+	Content-Length	29
+	Date	Tue, 25 Sep 2018 07:03:51 GMT
+	
+	服务器通过一个响应头Set-Cookie把数据让浏览器保存
+-------------------------------------------------------------------
+
+    第二次请求 
+	
+	请求	GET /day04/CookieServlet HTTP/1.1
+	Accept	text/html, application/xhtml+xml, */*
+	Accept-Language	zh-CN
+	User-Agent	Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko
+	Accept-Encoding	gzip, deflate
+	Host	localhost:8080
+	DNT	1
+	Connection	Keep-Alive
+	Cache-Control	no-cache
+	Cookie	name=zhangsan
+	
+	如果客户端有Cookie在访问服务器资源时就会携带着Cookie
+	
+	Cookie特点:
+	          不安全(用户名和密码)，所以不要Cookie保存敏感信息.
+			  
+    Cookie的生命周期有关.
+	Cookie的生命周期:默认情况下，Cookie的生命周期和浏览器的生命周期是一样的
+	当你设置了Cookie的生命周期。这时就是会保存在本地系统的硬盘上
+	
+	//可以设置Cookie的生存时间
+	cookie.setMaxAge(10*60);
+    //可以设置接收Cookie的资源路径,默认为工程名"/day04"
+    //只有/day04/VistorServlet路径所匹配的资源可以接收Cookie
+	cookie.setPath("/day04/VistorServlet");
+	
+	
+	
+	利用Cookie技术实现物购车
+	
+
+
